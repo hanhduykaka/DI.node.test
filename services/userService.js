@@ -1,15 +1,15 @@
 class UserService {
 
-    constructor(usersRepository) {
-        this.usersRepository = usersRepository;
+    constructor(userRepository) {
+        this.userRepository = userRepository;
     }
 
     getUserById(id) {
-        return this.usersRepository.getUserById(id);
+        return this.userRepository.getUserById(id);
     }
 
     create(user) {
-        return this.usersRepository.create(user);
+        return this.userRepository.create(user);
     }
 
 }

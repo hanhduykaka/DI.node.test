@@ -15,8 +15,8 @@ describe("UserService", function () {
     stubValue[config.users.first_name] = faker.name.findName();
     stubValue[config.users.last_name] = faker.name.findName();
     stubValue[config.users.email] = faker.internet.email();
-    stubValue[config.users.age] = faker.helpers.createCard();
-    stubValue[config.users.password] = md5(faker.helpers.createCard());
+    stubValue[config.users.age] = 16
+    stubValue[config.users.password] = md5('12345678');
 
     describe("create", function () {
         it("should create a new user", async function () {

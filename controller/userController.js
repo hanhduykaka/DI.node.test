@@ -5,35 +5,92 @@ const config = require('../config');
 const client = require('../redisClient');
 const secretKey = config.secretKey;
 const { validationResult } = require('express-validator');
-const UsersService = require('../services/userService');
-const UserServiceLocator = require('../serviceLocator/userServiceLocator');
-const UserRepository = require('../repository/userRepository');
-
-const abc = UserServiceLocator.getService();
-
-const userService = new UsersService(
-    abc
-);
+// const UserService = require('../services/userService');
 
 
-function getUsers(req, res) {
-    userService.getUsers(req, res);
+class UserController {
+    constructor(userService) {
+        this.userService = userService;
+    }
+
+
+    //   getUsers(req, res) {
+    //     this.userService.getUsers(req, res);
+    // }
+    postUser(req, res) {
+        var errorsResult = validationResult(req);
+        const id = req.body.id;
+        if (!id) {
+            return res.status(400).json(
+                {
+                    statusCode: 400,
+                    msg: `${config.msg.badRequest} ${config.msg.field} ${config.users.id} ${config.msg.users.canNotBeEmpty}`,
+                    data: null
+                });
+        }
+        // const checkUser = this.userService.getUserById(id);
+        // if (checkUser) {
+        //     const error =
+        //     {
+        //         msg: `${config.msg.users.userWithId} ${id} ${config.msg.users.alreadyUse}`
+        //     };
+        //     errorsResult.errors.push(error);
+        // }
+        if (!errorsResult.isEmpty()) {
+            return res.status(400).json(
+                {
+                    statusCode: 400,
+                    msg: `${config.msg.badRequest} ${errorsResult.errors[0].msg}`,
+                    data: null
+                });
+        }
+        var user = {};
+        user[config.users.id] = id;
+        user[config.users.first_name] = req.body.first_name;
+        user[config.users.last_name] = req.body.last_name;
+        user[config.users.email] = req.body.email;
+        user[config.users.age] = req.body.age;
+        user[config.users.password] = md5(req.body.password);
+        // this.userService.create(user);
+        return res.status(201).json(
+            {
+                statusCode: 201,
+                msg: config.msg.ok,
+                data: user
+            });
+    }
+    // putUser(req, res) {
+    //     this.userService.postUser(req, res);
+
+    // }
+    getUserById(req, res) {
+        const user = this.userService.getUserById(req.params.id);
+        if (!user) {
+            return res.status(200).json(
+                {
+                    statusCode: 200,
+                    msg: config.msg.users.userDoesNotExist,
+                    data: null
+                });
+        } else {
+            return res.status(200).json(
+                {
+                    statusCode: 200,
+                    msg: config.msg.ok,
+                    data: { user: user }
+                });
+        }
+    }
+    // deleteUser(req, res) {
+    //     this.userService.postUser(req, res);
+
+    // }
+    // getToken(req, res) {
+    //     userService.getToken(req, res);
+    // }
 }
-function postUser(req, res) {
-    userService.postUser(req, res);
-}
-function putUser(req, res) {
 
-}
-function getUserById(req, res) {
 
-}
-function deleteUser(req, res) {
-
-}
-function getToken(req, res) {
-    userService.getToken(req, res);
-}
 
 
 
@@ -239,6 +296,6 @@ function getToken(req, res) {
 //                 });
 //         });
 // }
-
-module.exports = { getUsers, getUserById, postUser, putUser, deleteUser, getToken }
+//getUsers,  putUser, deleteUser, getToken
+module.exports = UserController
 
