@@ -1,47 +1,18 @@
-
-// const client = require('../redisClient');
-// const config = require('../config');
-// const md5 = require('md5');
-
-
-class UsersService {
+class UserService {
 
     constructor(usersRepository) {
         this.usersRepository = usersRepository;
     }
 
-    getUsers(req, res) {
-        return this.usersRepository.getUsers(req, res);
+    getUserById(id) {
+        return this.usersRepository.getUserById(id);
     }
 
-    postUser(req, res) {
-        return this.usersRepository.postUser(req, res)
+    create(user) {
+        return this.usersRepository.create(user);
     }
 
-    getToken(req, res) {
-        this.usersRepository.getToken(req, res);
-    }
 }
 
-module.exports = UsersService;
-
-
-// function testCaigiDo() {
-
-//     ServiceLocator.isUniTest = true;
-//     var usr = new UsersService(ServiceLocator.getService());
-
-//     assert(usr.findAll(), true);
-// }
-
-
-
-// class UniTestRepository {
-
-//     getUsers(req, res) {
-
-//     }
-
-
-// }
+module.exports = UserService;
 

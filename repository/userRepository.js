@@ -4,8 +4,14 @@ const config = require('../config');
 const client = require('../redisClient');
 const secretKey = config.secretKey;
 const { validationResult } = require('express-validator');
-
+const userModel = require("../models/userModels");
 class UserRepository {
+
+
+    create(user) {
+        return userModel.create(user);
+    }
+
     // get all Users
     getUsers(req, res) {
         client.hgetall(config.tblUserName, function (err, obj) {
@@ -36,26 +42,28 @@ class UserRepository {
     }
 
     // get User by id
-    getUserById(req, res) {
-        const id = req.params.id;
-        client.hget(config.tblUserName, id, function (err, obj) {
-            if (!obj) {
-                return res.status(200).json(
-                    {
-                        statusCode: 200,
-                        msg: config.msg.users.userDoesNotExist,
-                        data: null
-                    });
-            } else {
-                return res.status(200).json(
-                    {
-                        statusCode: 200,
-                        msg: config.msg.ok,
-                        data: { user: JSON.parse(obj) }
-                    });
-            }
-        })
+    getUserById(id) {
+        return userModel.findOne(id);
+        // client.hget(config.tblUserName, id, function (err, obj) {
+        //     if (!obj) {
+        //         return res.status(200).json(
+        //             {
+        //                 statusCode: 200,
+        //                 msg: config.msg.users.userDoesNotExist,
+        //                 data: null
+        //             });
+        //     } else {
+        //         return res.status(200).json(
+        //             {
+        //                 statusCode: 200,
+        //                 msg: config.msg.ok,
+        //                 data: { user: JSON.parse(obj) }
+        //             });
+        //     }
+        // })
     }
+
+
 
     //  Add User 
     postUser(req, res) {
