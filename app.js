@@ -12,7 +12,6 @@ const app = express();
 // body-parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(require('./router'));
 
 const secretKey = config.secretKey;
 
@@ -21,6 +20,9 @@ app.use( expressJWT({ secret: secretKey, algorithms: [config.algorithms]})
     config.url.login,
     config.url.users.add // ~~ register
 ]}));
+
+//Important: Must be use route after define unless path.
+app.use(require('./router'));
 
 app.get('*', function (req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');

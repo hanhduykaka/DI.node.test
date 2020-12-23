@@ -11,4 +11,14 @@ async function create(user) {
     return userCreated;
 }
 
-module.exports = { findOne, create }
+async function getAll() {
+    const users = await client.hgetall(config.tblUserName);
+    return users;
+}
+
+async function deleteOne(id) {
+    const users = await client.hdel(config.tblUserName, id);
+    return users;
+}
+
+module.exports = { findOne, create, getAll, deleteOne }

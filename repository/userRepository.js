@@ -1,18 +1,23 @@
-const md5 = require('md5');
-const jwt = require('jsonwebtoken');
-const config = require('../config');
-const client = require('../redisClient');
-const secretKey = config.secretKey;
-const { validationResult } = require('express-validator');
 const userModel = require("../models/userModels");
 class UserRepository {
 
-
-   async create(userRequest) {
+    async create(userRequest) {
         return userModel.create(userRequest);
     }
 
-    // get all Users
+    async getUserById(id) {
+        return userModel.findOne(id);
+
+    }
+
+    async getAll() {
+        return userModel.getAll();
+    }
+
+    async delete(id) {
+        return userModel.deleteOne(id);
+    }
+
     // getUsers(req, res) {
     //     client.hgetall(config.tblUserName, function (err, obj) {
     //         if (!obj) {
@@ -40,31 +45,6 @@ class UserRepository {
     //         }
     //     })
     // }
-
-    // get User by id
-    async getUserById(id) {
-        return userModel.findOne(id);
-        // client.hget(config.tblUserName, id, function (err, obj) {
-        //     if (!obj) {
-        //         return res.status(200).json(
-        //             {
-        //                 statusCode: 200,
-        //                 msg: config.msg.users.userDoesNotExist,
-        //                 data: null
-        //             });
-        //     } else {
-        //         return res.status(200).json(
-        //             {
-        //                 statusCode: 200,
-        //                 msg: config.msg.ok,
-        //                 data: { user: JSON.parse(obj) }
-        //             });
-        //     }
-        // })
-    }
-
-
-
     //  Add User 
     // postUser(req, res) {
     //     var errorsResult = validationResult(req);

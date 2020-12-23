@@ -12,6 +12,14 @@ class UserService {
         return this.userRepository.create(data);
     }
 
+    async getAll() {
+        return this.userRepository.getAll();
+    }
+
+    async delete(id) {
+        return this.userRepository.delete(id);
+    }
+
 }
 
 module.exports = UserService;
