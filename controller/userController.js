@@ -41,6 +41,14 @@ class UserController {
     async postUser(req, res) {
         var errorsResult = validationResult(req);
         const id = req.body.id;
+        if (!errorsResult.isEmpty()) {
+            return res.status(400).json(
+                {
+                    statusCode: 400,
+                    msg: `${config.msg.badRequest} ${errorsResult.errors[0].msg}`,
+                    data: null
+                });
+        }
         const checkUser = await this.userService.getUserById(id);
         if (checkUser) {
             return res.status(400).json(
@@ -50,14 +58,7 @@ class UserController {
                     data: null
                 });
         }
-        if (!errorsResult.isEmpty()) {
-            return res.status(400).json(
-                {
-                    statusCode: 400,
-                    msg: `${config.msg.badRequest} ${errorsResult.errors[0].msg}`,
-                    data: null
-                });
-        }
+
         const createResult = await this.setData(id, req, res);
         if (createResult != null) {
             return res.status(201).json(
@@ -79,20 +80,20 @@ class UserController {
     async putUser(req, res) {
         let errorsResult = validationResult(req);
         const id = req.params.id;
+        if (!errorsResult.isEmpty()) {
+            return res.status(400).json(
+                {
+                    statusCode: 400,
+                    msg: `${config.msg.badRequest} ${errorsResult.errors[0].msg}`,
+                    data: null
+                });
+        }
         const checkUser = await this.userService.getUserById(id);
         if (!checkUser) {
             return res.status(400).json(
                 {
                     statusCode: 400,
                     msg: `${config.msg.badRequest} ${config.msg.users.userWithId} ${id} ${config.msg.users.doesNotExist}`,
-                    data: null
-                });
-        }
-        if (!errorsResult.isEmpty()) {
-            return res.status(400).json(
-                {
-                    statusCode: 400,
-                    msg: `${config.msg.badRequest} ${errorsResult.errors[0].msg}`,
                     data: null
                 });
         }
@@ -211,13 +212,11 @@ class UserController {
             const createUser = await this.userService.create(userRequest);
             return createUser;
         } catch (error) {
-            console.log(error)    
+            console.log(error)
             return null
         }
     }
 }
-
-
 
 module.exports = UserController
 
