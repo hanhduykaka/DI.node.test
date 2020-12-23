@@ -1,5 +1,5 @@
 const { check } = require('express-validator')
-const config = require('./config')
+const config = require('../config')
 
 exports.checkUser = [
     check(config.users.id)

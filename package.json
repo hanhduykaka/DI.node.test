@@ -21,7 +21,7 @@
     "chai-http": "^4.3.0"
   },
   "scripts": {
-    "test": "mocha './{,!(node_modules)/**}/*.test.js' --watch",
+    "test": "mocha './{,!(node_modules)/**}/*.test.js' --watch --timeout 10000",
     "start": "node app"
   },
   "author": "tai",
