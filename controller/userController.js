@@ -1,94 +1,102 @@
 
 const md5 = require('md5');
-const jwt = require('jsonwebtoken');
 const config = require('../config');
-const client = require('../redisClient');
-const secretKey = config.secretKey;
 const { validationResult } = require('express-validator');
-// const UserService = require('../services/userService');
+const { userService } = require('../serviceLocator');
 
 
-class UserController {
-    constructor(userService) {
-        this.userService = userService;
-    }
-
-
-    //   getUsers(req, res) {
-    //     this.userService.getUsers(req, res);
-    // }
-    postUser(req, res) {
-        var errorsResult = validationResult(req);
-        const id = req.body.id;
-        if (!id) {
-            return res.status(400).json(
-                {
-                    statusCode: 400,
-                    msg: `${config.msg.badRequest} ${config.msg.field} ${config.users.id} ${config.msg.users.canNotBeEmpty}`,
-                    data: null
-                });
-        }
-        // const checkUser = this.userService.getUserById(id);
-        // if (checkUser) {
-        //     const error =
-        //     {
-        //         msg: `${config.msg.users.userWithId} ${id} ${config.msg.users.alreadyUse}`
-        //     };
-        //     errorsResult.errors.push(error);
-        // }
-        if (!errorsResult.isEmpty()) {
-            return res.status(400).json(
-                {
-                    statusCode: 400,
-                    msg: `${config.msg.badRequest} ${errorsResult.errors[0].msg}`,
-                    data: null
-                });
-        }
-        var user = {};
-        user[config.users.id] = id;
-        user[config.users.first_name] = req.body.first_name;
-        user[config.users.last_name] = req.body.last_name;
-        user[config.users.email] = req.body.email;
-        user[config.users.age] = req.body.age;
-        user[config.users.password] = md5(req.body.password);
-        // this.userService.create(user);
-        return res.status(201).json(
+ async function getUsers(req, res) {
+  //  userService.getUsers(req, res);
+}
+async function postUser(req, res) {
+    var errorsResult = validationResult(req);
+    const id = req.body.id;
+    const checkUser = await userService.getUserById(id);
+    if (checkUser) {
+        return res.status(400).json(
             {
-                statusCode: 201,
-                msg: config.msg.ok,
-                data: user
+                statusCode: 400,
+                msg: `${config.msg.badRequest} ${config.msg.users.userWithId} ${id} ${config.msg.users.alreadyUse}`,
+                data: null
             });
     }
-    // putUser(req, res) {
-    //     this.userService.postUser(req, res);
-
-    // }
-    getUserById(req, res) {
-        const user = this.userService.getUserById(req.params.id);
-        if (!user) {
-            return res.status(200).json(
+    if (!errorsResult.isEmpty()) {
+        return res.status(400).json(
+            {
+                statusCode: 400,
+                msg: `${config.msg.badRequest} ${errorsResult.errors[0].msg}`,
+                data: null
+            });
+    }
+    let userRequest = {};
+    userRequest[config.users.id] = id;
+    userRequest[config.users.first_name] = req.body.first_name;
+    userRequest[config.users.last_name] = req.body.last_name;
+    userRequest[config.users.email] = req.body.email;
+    userRequest[config.users.age] = req.body.age;
+    userRequest[config.users.password] = md5(req.body.password);
+    try {
+        const createUser = await userService.create(userRequest);
+        if (createUser == '1')//create success redis return 1
+        {
+            return res.status(201).json(
                 {
-                    statusCode: 200,
-                    msg: config.msg.users.userDoesNotExist,
-                    data: null
-                });
-        } else {
-            return res.status(200).json(
-                {
-                    statusCode: 200,
+                    statusCode: 201,
                     msg: config.msg.ok,
-                    data: { user: user }
+                    data: userRequest
                 });
         }
-    }
-    // deleteUser(req, res) {
-    //     this.userService.postUser(req, res);
 
-    // }
-    // getToken(req, res) {
-    //     userService.getToken(req, res);
-    // }
+    } catch (error) {
+        console.log(error)
+        console.log(createUser)
+        return res.status(200).json(
+            {
+                statusCode: 200,
+                msg: config.msg.notSuccess,
+                data: userRequest
+            });
+    }
+
 }
+
+async function putUser(req, res) {
+    //userService.postUser(req, res);
+    return res.status(200).json(
+        {
+            statusCode: 200,
+            msg: config.msg.users.userDoesNotExist,
+            data: null
+        });
+}
+
+async function getUserById(req, res) {
+    const user = await userService.getUserById(req.params.id);
+    if (!user) {
+        return res.status(200).json(
+            {
+                statusCode: 200,
+                msg: config.msg.users.userDoesNotExist,
+                data: null
+            });
+    } else {
+        return res.status(200).json(
+            {
+                statusCode: 200,
+                msg: config.msg.ok,
+                data: { user: user }
+            });
+    }
+}
+
+async function deleteUser(req, res) {
+    //userService.postUser(req, res);
+
+}
+async function getToken(req, res) {
+    //userService.getToken(req, res);
+}
+// }
 
 
 
@@ -297,5 +305,5 @@ class UserController {
 //         });
 // }
 //getUsers,  putUser, deleteUser, getToken
-module.exports = UserController
+module.exports = { putUser, deleteUser, getToken, postUser, getUserById ,getUsers }
 

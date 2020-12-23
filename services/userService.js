@@ -4,12 +4,12 @@ class UserService {
         this.userRepository = userRepository;
     }
 
-    getUserById(id) {
+    async getUserById(id) {
         return this.userRepository.getUserById(id);
     }
 
-    create(user) {
-        return this.userRepository.create(user);
+    async create(data) {
+        return this.userRepository.create(data);
     }
 
 }

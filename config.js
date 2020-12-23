@@ -23,7 +23,7 @@ config.users.confirm_password = 'confirm_password';
 
 //url router
 config.url = {};
-config.url.login = '/api/v1/login';
+config.url.login = '/user/login';
 
 //url for users
 config.url.users = {};

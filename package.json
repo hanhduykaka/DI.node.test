@@ -4,6 +4,7 @@
   "description": "tai nguyen",
   "main": "app.js",
   "dependencies": {
+    "async-redis": "^1.1.7",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",

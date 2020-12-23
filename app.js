@@ -16,16 +16,11 @@ app.use(require('./router'));
 
 const secretKey = config.secretKey;
 
-app.use(expressJWT({
-    secret: secretKey, algorithms: [config.algorithms]
-}).unless(
-    {
-        path: [
-            '/api/v1/login',
-            '/user/add' // ~~ register
-        ]
-    }
-));
+app.use( expressJWT({ secret: secretKey, algorithms: [config.algorithms]})
+.unless({path: [
+    config.url.login,
+    config.url.users.add // ~~ register
+]}));
 
 app.get('*', function (req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');

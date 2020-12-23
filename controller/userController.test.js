@@ -23,60 +23,48 @@ describe("UserController", function () {
             userService = new UserService(userRepo);
         });
 
-        it("should not postUser a user when id param is not provided", async function () {
+        it("should not postUser a user when id already used", async function () {
 
             const stubValue = {};
+            stubValue[config.users.id] = faker.random.uuid();
             stubValue[config.users.first_name] = faker.name.findName();
             stubValue[config.users.last_name] = faker.name.findName();
             stubValue[config.users.email] = faker.internet.email();
             stubValue[config.users.age] = 16
             stubValue[config.users.password] = md5('12345678');
-            stubValue[config.users.confirm_password] = md5('12345678');
             const req = { body: stubValue };
+            const stub = sinon.stub(userService, "getUserById").returns(stubValue);
             userController = new UserController(userService);
             await userController.postUser(req, res);
             expect(status.calledOnce).to.be.true;
             expect(status.args[0][0]).to.equal(400);
             expect(json.calledOnce).to.be.true;
-            expect(json.args[0][0].msg).to.equal(`${config.msg.badRequest} ${config.msg.field} ${config.users.id} ${config.msg.users.canNotBeEmpty}`);
+            expect(stub.calledOnce).to.be.true;
+            expect(json.args[0][0].msg)
+                .to.equal(`${config.msg.badRequest} ${config.msg.users.userWithId} ${stubValue[config.users.id]} ${config.msg.users.alreadyUse}`);
         });
-
-        //     it("should not register a user when name and email params are not provided", async function () {
-        //         const req = { body: {} };
-        //         await new UserController().register(req, res);
-        //         expect(status.calledOnce).to.be.true;
-        //         expect(status.args\[0\][0]).to.equal(400);
-        //         expect(json.calledOnce).to.be.true;
-        //         expect(json.args\[0\][0].message).to.equal("Invalid Params");
-        //     });
-        //     it("should not register a user when email param is not provided", async function () {
-        //         const req = { body: { name: faker.name.findName() } };
-        //         await new UserController().register(req, res);
-        //         expect(status.calledOnce).to.be.true;
-        //         expect(status.args\[0\][0]).to.equal(400);
-        //         expect(json.calledOnce).to.be.true;
-        //         expect(json.args\[0\][0].message).to.equal("Invalid Params");
-        //     });
-        //     it("should register a user when email and name params are provided", async function () {
-        //         const req = {
-        //             body: { name: faker.name.findName(), email: faker.internet.email() }
-        //         };
-        //         const stubValue = {
-        //             id: faker.random.uuid(),
-        //             name: faker.name.findName(),
-        //             email: faker.internet.email(),
-        //             createdAt: faker.date.past(),
-        //             updatedAt: faker.date.past()
-        //         };
-        //         const stub = sinon.stub(userService, "create").returns(stubValue);
-        //         userController = new UserController(userService);
-        //         await userController.register(req, res);
-        //         expect(stub.calledOnce).to.be.true;
-        //         expect(status.calledOnce).to.be.true;
-        //         expect(status.args\[0\][0]).to.equal(201);
-        //         expect(json.calledOnce).to.be.true;
-        //         expect(json.args\[0\][0].data).to.equal(stubValue);
-        //     });
+        it("should register a user when all field params are provided", async function () {
+            const requestValue = {};
+            requestValue[config.users.id] = faker.random.uuid();
+            requestValue[config.users.first_name] = faker.name.findName();
+            requestValue[config.users.last_name] = faker.name.findName();
+            requestValue[config.users.email] = faker.internet.email();
+            requestValue[config.users.age] = 16
+            requestValue[config.users.password] = '12345678';
+            const req = { body: requestValue }; //request with password raw
+            const stubValue = { ...requestValue };
+            stubValue[config.users.password] = md5('12345678'); // the password stub receive is hash.
+            const stubCheckUser = sinon.stub(userService, "getUserById").returns();
+            const stubCreate = sinon.stub(userService, "create").returns(stubValue);
+            userController = new UserController(userService);
+            userController.postUser(req, res);
+            expect(stubCheckUser.calledOnce).to.be.true;
+            expect(stubCreate.calledOnce).to.be.true;
+            expect(status.calledOnce).to.be.true;
+            expect(status.args[0][0]).to.equal(201);
+            expect(json.calledOnce).to.be.true;        
+            expect(json.args[0][0].data).to.equal(stubValue);
+        });
     });
 
     describe("getUserById", function () {
