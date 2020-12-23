@@ -20,8 +20,9 @@ describe("UserRepository", function () {
         it("should add a new user to the db", async function () {
             const stub = sinon.stub(userModel, "create").returns(stubValue);
             const userRepository = new UserRepository();
-            const user = userRepository.create(stubValue);
+            const user = await userRepository.create(stubValue);
             expect(stub.calledOnce).to.be.true;
+            // expect(stub.calledOnce).to.be.true;
         });
     });
 
@@ -29,7 +30,7 @@ describe("UserRepository", function () {
         it("should retrieve a user with specific id", async function () {
             const stub = sinon.stub(userModel, "findOne").returns(stubValue);
             const userRepository = new UserRepository();
-            const user = userRepository.getUserById(stubValue[config.users.id]);
+            const user = await userRepository.getUserById(stubValue[config.users.id]);
             expect(stub.calledOnce).to.be.true;
         });
     });

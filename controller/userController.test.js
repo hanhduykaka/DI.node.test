@@ -57,7 +57,7 @@ describe('UserController', function () {
             const stubCreate = sinon.stub(userController, 'setData').returns('1');
             await userController.postUser(req, res);
             expect(stubCheckUser.calledOnce).to.be.true;
-             expect(stubCreate.calledOnce).to.be.true;
+            expect(stubCreate.calledOnce).to.be.true;
             expect(status.calledOnce).to.be.true;
             expect(status.args[0][0]).to.equal(201);
             expect(json.calledOnce).to.be.true;
