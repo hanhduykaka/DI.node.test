@@ -13,16 +13,17 @@ async function create(user) {
 
 async function getAll() {
     const users = await client.hgetall(config.tblUserName);
-    let result = [];
-    if(users){
-        for (const [key, value] of Object.entries(users)) {
-            const user = JSON.parse(value);
-            result.push(
-                user
-            );
-        }
+    if (!users) {
+        return null;
     }
-    return result; // null if not exist
+    let result = [];
+    for (const [key, value] of Object.entries(users)) {
+        const user = JSON.parse(value);
+        result.push(
+            user
+        );
+    }
+    return result; 
 }
 
 async function deleteOne(id) {

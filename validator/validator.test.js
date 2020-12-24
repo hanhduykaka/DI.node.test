@@ -135,7 +135,6 @@ describe('Validator', () => {
             resultPut.should.have.status(400);
             should.equal(resultPut.body.data, null);
             should.equal(resultPut.body.msg, `${config.msg.badRequest} ${config.msg.field} ${config.users.confirm_password} ${config.msg.users.canNotBeEmpty}`);
-
         });
 
         it('it should not post/put with confirm password and password mismatch', async () => {
@@ -163,8 +162,6 @@ describe('Validator', () => {
         it('it should not post with empty field id', async () => {
             let user = { ...stubValue };
             user[config.users.id] = '';
-
-            //post
             const result = await chai.request(app).post(config.url.users.add).send(user);
             expect(result.body.data).to.equal(null);
             result.should.have.status(400);
@@ -183,7 +180,6 @@ describe('Validator', () => {
             should.equal(result.body.data, null);
             result.body.msg.should
                 .eql(`${config.msg.badRequest} ${config.msg.field} ${config.users.id} ${config.msg.users.canNotBeEmpty}`);
-
         });
 
         it('it should not get the token when empty field password', async () => {
@@ -194,8 +190,6 @@ describe('Validator', () => {
             should.equal(result.body.data, null);
             result.body.msg.should
                 .eql(`${config.msg.badRequest} ${config.msg.field} ${config.users.password} ${config.msg.users.canNotBeEmpty}`);
-
-
         });
     });
 

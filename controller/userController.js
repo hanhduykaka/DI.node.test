@@ -1,4 +1,3 @@
-
 const md5 = require('md5');
 const config = require('../config');
 const { validationResult } = require('express-validator');

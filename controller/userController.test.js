@@ -13,6 +13,7 @@ describe('UserController', function () {
 
     describe('postUser', function () {
         let status, json, res, userService, userController
+        
         beforeEach(() => {
             status = sinon.stub();
             json = sinon.spy();
@@ -316,6 +317,7 @@ describe('UserController', function () {
         const stubValue = {};
         stubValue[config.users.id] = faker.random.uuid();
         stubValue[config.users.password] = md5('12345678');
+
         beforeEach(() => {      
             status = sinon.stub();
             json = sinon.spy();
