@@ -11,8 +11,8 @@ class UserController {
     }
     //get all users
     async getUsers(req, res) {
-        const obj = await this.userService.getAll();
-        if (!obj) {
+        const userList = await this.userService.getAll();
+        if (!userList) {
             return res.status(200).json(
                 {
                     statusCode: 200,
@@ -21,18 +21,12 @@ class UserController {
                 });
 
         } else {
-            let result = [];
-            for (const [key, value] of Object.entries(obj)) {
-                const user = JSON.parse(value);
-                result.push(
-                    user
-                );
-            }
+      
             return res.status(200).json(
                 {
                     statusCode: 200,
                     msg: config.msg.ok,
-                    data: { users: result }
+                    data: { users: userList }
                 });
         }
     }
@@ -68,9 +62,9 @@ class UserController {
                     data: null
                 });
         }
-        return res.status(200).json(
+        return res.status(500).json(
             {
-                statusCode: 200,
+                statusCode: 500,
                 msg: config.msg.notSuccess,
                 data: null
             });
@@ -106,9 +100,9 @@ class UserController {
                     data: null
                 });
         }
-        return res.status(200).json(
+        return res.status(500).json(
             {
-                statusCode: 200,
+                statusCode: 500,
                 msg: config.msg.notSuccess,
                 data: null
             });
