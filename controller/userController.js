@@ -177,7 +177,7 @@ class UserController {
                         data: { token: '' }
                     });
             }
-            const token = this.generateToken(checkUser);
+            const token = await this.generateToken(checkUser);
             return res.status(200).json(
                 {
                     statusCode: 200,
@@ -206,8 +206,8 @@ class UserController {
     }
 
     //sub function handle generate token
-    async generateToken(checkUser){
-        const token = jwt.sign(
+    async generateToken(checkUser) {
+        const token = await jwt.sign(
             { checkUser },
             secretKey,
             { expiresIn: config.timeOut, algorithm: config.algorithms }
