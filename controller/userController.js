@@ -5,9 +5,11 @@ const jwt = require('jsonwebtoken');
 const secretKey = config.secretKey;
 
 class UserController {
+    
     constructor(userService) {
         this.userService = userService;
     }
+
     //get all users
     async getUsers(req, res) {
         const userList = await this.userService.getAll();

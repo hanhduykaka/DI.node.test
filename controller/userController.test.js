@@ -11,9 +11,17 @@ const jwt = require('jsonwebtoken');
 
 describe('UserController', function () {
 
+    const stubValue = {};
+    stubValue[config.users.id] = faker.random.uuid();
+    stubValue[config.users.first_name] = faker.name.findName();
+    stubValue[config.users.last_name] = faker.name.findName();
+    stubValue[config.users.email] = faker.internet.email();
+    stubValue[config.users.age] = 16
+    stubValue[config.users.password] = '12345678';
+
     describe('postUser', function () {
         let status, json, res, userService, userController
-        
+
         beforeEach(() => {
             status = sinon.stub();
             json = sinon.spy();
@@ -24,13 +32,7 @@ describe('UserController', function () {
         });
 
         it('should not postUser a user when id already used', async function () {
-            const stubValue = {};
-            stubValue[config.users.id] = faker.random.uuid();
-            stubValue[config.users.first_name] = faker.name.findName();
-            stubValue[config.users.last_name] = faker.name.findName();
-            stubValue[config.users.email] = faker.internet.email();
-            stubValue[config.users.age] = 16
-            stubValue[config.users.password] = md5('12345678');
+         
             const req = { body: stubValue };
             const stub = sinon.stub(userService, 'getUserById').returns(stubValue);
             userController = new UserController(userService);
@@ -44,13 +46,6 @@ describe('UserController', function () {
         });
 
         it('should not postUser a user when an error occur on database', async function () {
-            const stubValue = {};
-            stubValue[config.users.id] = faker.random.uuid();
-            stubValue[config.users.first_name] = faker.name.findName();
-            stubValue[config.users.last_name] = faker.name.findName();
-            stubValue[config.users.email] = faker.internet.email();
-            stubValue[config.users.age] = 16
-            stubValue[config.users.password] = md5('12345678');
             const req = { body: stubValue };
             const stub = sinon.stub(userService, 'getUserById').returns();
             userController = new UserController(userService);
@@ -66,16 +61,7 @@ describe('UserController', function () {
         });
 
         it('should register a user when all field params are provided', async function () {
-            const requestValue = {};
-            requestValue[config.users.id] = faker.random.uuid();
-            requestValue[config.users.first_name] = faker.name.findName();
-            requestValue[config.users.last_name] = faker.name.findName();
-            requestValue[config.users.email] = faker.internet.email();
-            requestValue[config.users.age] = 16
-            requestValue[config.users.password] = '12345678';
-            const req = { body: requestValue }; //request with password raw
-            const stubValue = { ...requestValue };
-            stubValue[config.users.password] = md5('12345678'); // the password stub receive is hash.
+            const req = { body: stubValue }; //request with password raw
             const stubCheckUser = sinon.stub(userService, 'getUserById').returns();
             userController = new UserController(userService);
             const stubCreate = sinon.stub(userController, 'setData').returns('1');
@@ -101,13 +87,6 @@ describe('UserController', function () {
         });
 
         it('should not update a user when id does not exist in DB', async function () {
-            const stubValue = {};
-            stubValue[config.users.id] = faker.random.uuid();
-            stubValue[config.users.first_name] = faker.name.findName();
-            stubValue[config.users.last_name] = faker.name.findName();
-            stubValue[config.users.email] = faker.internet.email();
-            stubValue[config.users.age] = 16
-            stubValue[config.users.password] = md5('12345678');
             const req = { body: stubValue };
             req.params = { id: stubValue[config.users.id] };
             const stub = sinon.stub(userService, 'getUserById').returns();
@@ -122,13 +101,6 @@ describe('UserController', function () {
         });
 
         it('should not update a user when an error occur on database', async function () {
-            const stubValue = {};
-            stubValue[config.users.id] = faker.random.uuid();
-            stubValue[config.users.first_name] = faker.name.findName();
-            stubValue[config.users.last_name] = faker.name.findName();
-            stubValue[config.users.email] = faker.internet.email();
-            stubValue[config.users.age] = 16
-            stubValue[config.users.password] = md5('12345678');
             const req = { body: stubValue };
             req.params = { id: stubValue[config.users.id] };
             const stub = sinon.stub(userService, 'getUserById').returns(stubValue);
@@ -145,17 +117,8 @@ describe('UserController', function () {
         });
 
         it('should update a user when all field params are provided', async function () {
-            const requestValue = {};
-            requestValue[config.users.id] = faker.random.uuid();
-            requestValue[config.users.first_name] = faker.name.findName();
-            requestValue[config.users.last_name] = faker.name.findName();
-            requestValue[config.users.email] = faker.internet.email();
-            requestValue[config.users.age] = 16
-            requestValue[config.users.password] = '12345678';
-            const req = { body: requestValue }; //request with password raw
-            req.params = { id: requestValue[config.users.id] };
-            const stubValue = { ...requestValue };
-            stubValue[config.users.password] = md5('12345678'); // the password stub receive is hash.
+            const req = { body: stubValue }; //request with password raw
+            req.params = { id: stubValue[config.users.id] };
             const stubCheckUser = sinon.stub(userService, 'getUserById').returns(stubValue);
             userController = new UserController(userService);
             const stubCreate = sinon.stub(userController, 'setData').returns('1');
@@ -175,13 +138,6 @@ describe('UserController', function () {
         let userService;
         let status;
         let json;
-        const stubValue = {};
-        stubValue[config.users.first_name] = faker.name.findName();
-        stubValue[config.users.last_name] = faker.name.findName();
-        stubValue[config.users.email] = faker.internet.email();
-        stubValue[config.users.age] = 16
-        stubValue[config.users.password] = md5('12345678');
-        stubValue[config.users.confirm_password] = md5('12345678');
 
         beforeEach(() => {
             req = { params: { id: faker.random.uuid() } };
@@ -224,13 +180,6 @@ describe('UserController', function () {
         let userService;
         let status;
         let json;
-        const stubValue = {};
-        stubValue[config.users.first_name] = faker.name.findName();
-        stubValue[config.users.last_name] = faker.name.findName();
-        stubValue[config.users.email] = faker.internet.email();
-        stubValue[config.users.age] = 16
-        stubValue[config.users.password] = md5('12345678');
-        stubValue[config.users.confirm_password] = md5('12345678');
         let arrStub = [];
         arrStub.push(stubValue);
 
@@ -256,7 +205,6 @@ describe('UserController', function () {
         });
 
         it('should not return any user when data is empty', async function () {
-            stubValue[config.users.id] = req.params.id;
             const stub = sinon.stub(userService, 'getAll').returns();
             userController = new UserController(userService);
             await userController.getUsers(req, res);
