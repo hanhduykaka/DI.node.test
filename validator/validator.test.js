@@ -22,8 +22,8 @@ describe('Validator', () => {
             user[config.users.age] = 14;
             user[config.users.password] = md5('12345678');
             user[config.users.confirm_password] = md5('12345678');
-            const result =  await chai.request(app).post(config.url.users.add).send(user);
-             expect(result.body.data).to.equal(null);
+            const result = await chai.request(app).post(config.url.users.add).send(user);
+            expect(result.body.data).to.equal(null);
             result.should.have.status(400);
             should.equal(result.body.data, null);
             should.equal(result.body.msg, `${config.msg.badRequest} ${config.msg.users.invalidEmail}`);

@@ -21,7 +21,7 @@ class UserController {
                 });
 
         } else {
-      
+
             return res.status(200).json(
                 {
                     statusCode: 200,
@@ -177,23 +177,17 @@ class UserController {
                         data: { token: '' }
                     });
             }
-            jwt.sign(
-                { checkUser },
-                secretKey,
-                { expiresIn: config.timeOut, algorithm: config.algorithms },
-                (err, token) => {
-                    return res.status(200).json(
-                        {
-                            statusCode: 200,
-                            msg: config.msg.ok,
-                            data: { token: token }
-                        });
-
+            const token = this.generateToken(checkUser);
+            return res.status(200).json(
+                {
+                    statusCode: 200,
+                    msg: config.msg.ok,
+                    data: { token: token }
                 });
         }
     }
 
-    //sub  handle set data to redis
+    //sub function handle set data to redis
     async setData(id, req, res) {
         let userRequest = {};
         userRequest[config.users.id] = id;
@@ -209,6 +203,16 @@ class UserController {
             console.log(error)
             return null
         }
+    }
+
+    //sub function handle generate token
+    async generateToken(checkUser){
+        const token = jwt.sign(
+            { checkUser },
+            secretKey,
+            { expiresIn: config.timeOut, algorithm: config.algorithms }
+        );
+        return token;
     }
 }
 

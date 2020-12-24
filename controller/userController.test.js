@@ -7,6 +7,7 @@ const md5 = require('md5');
 const config = require('../config');
 const UserController = require('./userController');
 const UserService = require('../services/userService');
+const jwt = require('jsonwebtoken');
 
 describe('UserController', function () {
 
@@ -303,6 +304,74 @@ describe('UserController', function () {
             expect(status.args[0][0]).to.equal(200);
             expect(json.args[0][0].msg).to.equal(`${config.msg.users.userWithId} ${req.params.id} ${config.msg.users.doesNotExist}`);
             expect(json.args[0][0].data).to.equal(null);
+        });
+    });
+
+    describe('getToken', function () {
+        let req;
+        let res;
+        let userService;
+        let status;
+        let json;
+        const stubValue = {};
+        stubValue[config.users.id] = faker.random.uuid();
+        stubValue[config.users.password] = md5('12345678');
+        beforeEach(() => {      
+            status = sinon.stub();
+            json = sinon.spy();
+            res = { status, json };
+            status.returns(res);
+            const userRepo = sinon.spy();
+            userService = new UserService(userRepo);
+        });
+
+        it('should not return the token when id does not exist in DB', async function () {
+            const requestBody = {...stubValue};
+            requestBody[config.users.password] = '12345678';
+            const req = { body: requestBody };
+            const stub = sinon.stub(userService, 'getUserById').returns();
+            userController = new UserController(userService);
+            await userController.getToken(req, res);
+            expect(stub.calledOnce).to.be.true;
+            expect(json.calledOnce).to.be.true;
+            expect(json.args[0][0].msg).to.equal(config.msg.users.userDoesNotExist);
+            expect(status.args[0][0]).to.equal(200);
+            expect(json.args[0][0].data.token).to.equal('');
+        });
+
+        it('should not return the token when password does not match', async function () {
+            const requestBody = {...stubValue};
+            requestBody[config.users.password] = '123456789';
+            const req = { body: requestBody };
+            const stub = sinon.stub(userService, 'getUserById').returns(stubValue);
+            userController = new UserController(userService);
+            await userController.getToken(req, res);
+            expect(stub.calledOnce).to.be.true;
+            expect(json.calledOnce).to.be.true;
+            expect(json.args[0][0].msg).to.equal(config.msg.users.passwordNotCorrect);
+            expect(status.args[0][0]).to.equal(200);
+            expect(json.args[0][0].data.token).to.equal('');
+        });
+
+        it('should return the token', async function () {
+            const requestBody = {...stubValue};
+            requestBody[config.users.password] = '12345678';
+            const req = { body: requestBody };
+            const stub = sinon.stub(userService, 'getUserById').returns(stubValue);
+            userController = new UserController(userService);
+            const genToken = jwt.sign(
+                { stubValue },
+                config.secretKey,
+                { expiresIn: config.timeOut, algorithm: config.algorithms }
+            );
+            const stubToken = sinon.stub(userController, 'generateToken').returns(genToken);
+            await userController.getToken(req, res);
+            expect(stub.calledOnce).to.be.true;
+            expect(stubToken.calledOnce).to.be.true;
+            expect(json.calledOnce).to.be.true;
+            expect(json.args[0][0].msg).to.equal(config.msg.ok);
+            expect(status.args[0][0]).to.equal(200);
+            expect(json.args[0][0].data.token).to.equal(genToken);
         });
     });
 
